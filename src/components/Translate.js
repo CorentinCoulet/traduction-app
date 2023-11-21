@@ -6,6 +6,7 @@ import "../styles/Translate.css";
 const Translate = () => {
   const [text, setText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
+  const [sourceLanguage, setSourceLanguage] = useState('en');
   const [targetLanguage, setTargetLanguage] = useState('fr');
   const [languages, setLanguages] = useState([]);
 
@@ -15,6 +16,7 @@ const Translate = () => {
             const response = await axios.get(
             'http://localhost:5000/languages'
             );
+            console.log(response.data);
             setLanguages(response.data.languages);
         } catch (error) {
             console.error('Error fetching languages:', error);
@@ -24,10 +26,30 @@ const Translate = () => {
         fetchLanguages();
     }, []);
 
+
     const handleTranslate = async () => {
-        // Ajoutez ici la logique pour traduire le texte
-        // Utilisez targetLanguage.value pour obtenir la valeur sélectionnée
-      };
+        try {
+            const response = await axios.post(
+              'http://localhost:5000/languages',
+              {
+                text: text,
+                sourceLanguage: sourceLanguage,
+                targetLanguage: targetLanguage,
+              }
+            );
+            setTranslatedText(response.data.translatedText);
+        } catch (error) {
+            console.error('Error translating:', error);
+        }
+    };
+      
+    const handleTextChange = (e) => {
+        const newText = e.target.value;
+        setText(newText);
+        setTimeout(() => {
+            handleTranslate();
+        }, 500);
+    }
 
     return (
         <div className='container'>
@@ -35,29 +57,30 @@ const Translate = () => {
                 <label>
                     <Select
                         classNamePrefix='selecteur'
-                        value={targetLanguage}
-                        onChange={(selectedOption) => setTargetLanguage(selectedOption)}
-                        options={languages.map((lang) => ({
-                            value: lang.language,
-                            label: lang.name,
+                        value={{ value: sourceLanguage, label: sourceLanguage }}
+                        onChange={(selectedOption) => setSourceLanguage(selectedOption)}
+                        options={(languages.translations || []).map((translation) => ({
+                            value: translation.detected_source_language,
+                            label: translation.detected_source_language,
                         }))}
                     />
                 </label>
                 <textarea
                     className='tradArea1'
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={handleTextChange}
                     placeholder='Enter text'
                 />
             </div>
             <div className='catTrad'>
                 <label>
                     <Select
-                        value={translatedText}
-                        onChange={(selectedOption) => setTranslatedText(selectedOption)}
-                        options={languages.map((lang) => ({
-                        value: lang.language,
-                        label: lang.name,
+                        classNamePrefix='selecteur'
+                        value={{ value: targetLanguage, label: targetLanguage }}
+                        onChange={(selectedOption) => setTargetLanguage(selectedOption.value)}
+                        options={(languages.translations || []).map((translation) => ({
+                            value: translation.detected_source_language,
+                            label: translation.detected_source_language,
                         }))}
                     />
                 </label>

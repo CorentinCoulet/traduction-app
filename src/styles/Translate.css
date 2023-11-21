@@ -4,26 +4,16 @@
     justify-content: space-evenly;
 }
 
-.selecteur__control {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+.selecteur__control.css-13cymwt-control, 
+.selecteur__control.css-t3ipsp-control,
+.selecteur__control.css-t3ipsp-control:hover {
     width:  400px;
     height: 50px; 
-    background-color: bisque;
-    margin-bottom: 5px;
     border-radius: 15px;
-} 
-
-/* .catTrad select {
     background-color: bisque;
     border: none;
-} */
-
-/* .catTrad select:focus {
-    outline: none;
-} */
+    margin-bottom: 5px;
+}
 
 .tradArea1, .tradArea2 {
     width:  400px;
