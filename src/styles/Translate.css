@@ -1,0 +1,57 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.selecteur__control {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width:  400px;
+    height: 50px; 
+    background-color: bisque;
+    margin-bottom: 5px;
+    border-radius: 15px;
+} 
+
+/* .catTrad select {
+    background-color: bisque;
+    border: none;
+} */
+
+/* .catTrad select:focus {
+    outline: none;
+} */
+
+.tradArea1, .tradArea2 {
+    width:  400px;
+    height: 200px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    white-space: pre-wrap;
+    font-size: 24px;
+    padding: 10px;
+    resize: none;
+    color: #000;
+    border-radius: 15px;
+}
+
+.tradArea1::placeholder, .tradArea2::placeholder {
+    color: #000;
+}
+
+.catTrad  {
+    display: flex;
+    flex-direction: column;
+}
+
+.tradArea1 {
+    background-color: #3299CC;
+}
+
+.tradArea2 {
+    background-color: #5959AB;
+}
