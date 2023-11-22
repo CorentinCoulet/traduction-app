@@ -9,17 +9,17 @@ const apiKey = process.env.DEEPL_API_KEY;
 app.use(cors());
 app.use(express.json());
 
-app.get('/translate/languages', async (req, res) => {
+app.get('/glossaries', async (req, res) => {
   try {
       const response = await axios.get(
-          'https://api-free.deepl.com/v2/languages',
+          'https://api-free.deepl.com/v2/glossaries',
           {
               headers: {
                   'Authorization': `DeepL-Auth-Key ${apiKey}`,
               },
           }
       );
-      res.json({ languages: response.data.languages });
+      res.json({ glossaries: response.data.glossaries });
   } catch (error) {
       console.error('Error fetching languages:', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -27,7 +27,7 @@ app.get('/translate/languages', async (req, res) => {
 });
 
 app.post('/translate', async (req, res) => {
-    const { text, targetLanguage } = req.body;
+    const { text, targetLanguage, sourceLanguage } = req.body;
   
     try {
       if (!text || !targetLanguage) {
@@ -38,6 +38,7 @@ app.post('/translate', async (req, res) => {
         {
           text: [text],
           target_lang: targetLanguage,
+          source_lang: sourceLanguage,
         },
         {
           headers: {

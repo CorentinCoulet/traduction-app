@@ -14,7 +14,7 @@ const Translate = () => {
     useEffect(() => {
         const fetchLanguages = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/translate/languages');
+                const response = await axios.get('http://localhost:5000/glossaries');
                 if (response.data && response.data.languages) {
                     setLanguages(response.data.languages);
                 } else {
