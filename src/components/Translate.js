@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
+import { debounce } from 'lodash';
 import "../styles/Translate.css";
 
 const Translate = () => {
@@ -12,44 +13,39 @@ const Translate = () => {
 
     useEffect(() => {
         const fetchLanguages = async () => {
-        try {
-            const response = await axios.get(
-            'http://localhost:5000/languages'
-            );
-            console.log(response.data);
-            setLanguages(response.data.languages);
-        } catch (error) {
-            console.error('Error fetching languages:', error);
-        }
+            try {
+                const response = await axios.get('http://localhost:5000/translate/languages');
+                if (response.data && response.data.languages) {
+                    setLanguages(response.data.languages);
+                } else {
+                    console.error('Invalid response format:', response);
+                }
+            } catch (error) {
+                console.error('Error fetching languages:', error);
+            }
         };
 
         fetchLanguages();
     }, []);
 
-
-    const handleTranslate = async () => {
+    const handleTranslate = debounce(async () => {
         try {
-            const response = await axios.post(
-              'http://localhost:5000/languages',
-              {
-                text: text,
-                sourceLanguage: sourceLanguage,
-                targetLanguage: targetLanguage,
-              }
-            );
-            setTranslatedText(response.data.translatedText);
+          const response = await axios.post('http://localhost:5000/translate', {
+            text: text,
+            sourceLanguage: sourceLanguage,
+            targetLanguage: targetLanguage,
+          });
+          setTranslatedText(response.data.translatedText);
         } catch (error) {
-            console.error('Error translating:', error);
+          console.error('Error translating:', error);
         }
-    };
+      }, 500);
       
     const handleTextChange = (e) => {
         const newText = e.target.value;
         setText(newText);
-        setTimeout(() => {
-            handleTranslate();
-        }, 500);
-    }
+        handleTranslate();
+    };
 
     return (
         <div className='container'>
