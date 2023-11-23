@@ -3,7 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const app = express();
 const PORT = 5000;
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const apiKey = process.env.DEEPL_API_KEY;
 
 app.use(cors());

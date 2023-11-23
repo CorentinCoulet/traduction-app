@@ -11,36 +11,40 @@ const Translate = () => {
   const [targetLanguage, setTargetLanguage] = useState('fr');
   const [languages, setLanguages] = useState([]);
 
-    useEffect(() => {
-        const fetchLanguages = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/glossaries');
-                if (response.data && response.data.languages) {
-                    setLanguages(response.data.languages);
-                } else {
-                    console.error('Invalid response format:', response);
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const glossariesResponse = await axios.get('http://localhost:5000/glossaries');
+            if (glossariesResponse.data && glossariesResponse.data.languages) {
+                setLanguages(glossariesResponse.data.languages);
+                // Sélectionnez automatiquement la première langue comme langue source par défaut
+                if (glossariesResponse.data.languages.length > 0) {
+                    setSourceLanguage(glossariesResponse.data.languages[0].detected_source_language);
                 }
+            } else {
+                console.error('Invalid response format:', glossariesResponse);
+            }
             } catch (error) {
-                console.error('Error fetching languages:', error);
+                console.error('Error fetching data:', error);
             }
         };
 
-        fetchLanguages();
+        fetchData();
     }, []);
 
     const handleTranslate = debounce(async () => {
         try {
-          const response = await axios.post('http://localhost:5000/translate', {
-            text: text,
-            sourceLanguage: sourceLanguage,
-            targetLanguage: targetLanguage,
-          });
-          setTranslatedText(response.data.translatedText);
+            const translationResponse = await axios.post('http://localhost:5000/translate', {
+                text: text,
+                sourceLanguage: sourceLanguage,
+                targetLanguage: targetLanguage,
+            });
+            setTranslatedText(translationResponse.data.translatedText);
         } catch (error) {
-          console.error('Error translating:', error);
+            console.error('Error translating:', error);
         }
-      }, 500);
-      
+    }, 500);
+
     const handleTextChange = (e) => {
         const newText = e.target.value;
         setText(newText);
@@ -55,9 +59,9 @@ const Translate = () => {
                         classNamePrefix='selecteur'
                         value={{ value: sourceLanguage, label: sourceLanguage }}
                         onChange={(selectedOption) => setSourceLanguage(selectedOption)}
-                        options={(languages.translations || []).map((translation) => ({
-                            value: translation.detected_source_language,
-                            label: translation.detected_source_language,
+                        options={(languages || []).map((language) => ({
+                            value: language.detected_source_language,
+                            label: language.detected_source_language,
                         }))}
                     />
                 </label>
