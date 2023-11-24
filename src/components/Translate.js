@@ -7,30 +7,36 @@ import "../styles/Translate.css";
 const Translate = () => {
   const [text, setText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
-  const [sourceLanguage, setSourceLanguage] = useState('en');
+  const [sourceLanguage, setSourceLanguage] = useState('');
   const [targetLanguage, setTargetLanguage] = useState('fr');
   const [languages, setLanguages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const glossariesResponse = await axios.get('http://localhost:5000/glossaries');
-            if (glossariesResponse.data && glossariesResponse.data.languages) {
-                setLanguages(glossariesResponse.data.languages);
-                // Sélectionnez automatiquement la première langue comme langue source par défaut
-                if (glossariesResponse.data.languages.length > 0) {
-                    setSourceLanguage(glossariesResponse.data.languages[0].detected_source_language);
-                }
-            } else {
-                console.error('Invalid response format:', glossariesResponse);
-            }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+      try {
+        const response = await axios.get('http://localhost:5000/glossaries');
+        console.log(response.data);
+        if (response.data && response.data.glossaries) {
+          const uniqueLanguages = Array.from(new Set(response.data.glossaries.map(lang => lang.detected_source_language)))
+            .map(languageCode => ({
+              code: languageCode,
+              label: response.data.glossaries.find(lang => lang.detected_source_language === languageCode).language,
+            }));
 
-        fetchData();
-    }, []);
+          setLanguages(uniqueLanguages);
+
+          if (uniqueLanguages.length > 0) {
+            setSourceLanguage(uniqueLanguages[0].code);
+          }
+        } else {
+          console.error('Invalid response format:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
     const handleTranslate = debounce(async () => {
         try {
@@ -58,18 +64,18 @@ const Translate = () => {
                     <Select
                         classNamePrefix='selecteur'
                         value={{ value: sourceLanguage, label: sourceLanguage }}
-                        onChange={(selectedOption) => setSourceLanguage(selectedOption)}
+                        onChange={(selectedOption) => setSourceLanguage(selectedOption.value)}
                         options={(languages || []).map((language) => ({
-                            value: language.detected_source_language,
-                            label: language.detected_source_language,
+                            value: language.code,
+                            label: language.label,
                         }))}
                     />
                 </label>
                 <textarea
                     className='tradArea1'
                     value={text}
-                    onChange={handleTextChange}
                     placeholder='Enter text'
+                    onChange={handleTextChange}
                 />
             </div>
             <div className='catTrad'>
@@ -78,9 +84,9 @@ const Translate = () => {
                         classNamePrefix='selecteur'
                         value={{ value: targetLanguage, label: targetLanguage }}
                         onChange={(selectedOption) => setTargetLanguage(selectedOption.value)}
-                        options={(languages.translations || []).map((translation) => ({
-                            value: translation.detected_source_language,
-                            label: translation.detected_source_language,
+                        options={(languages || []).map((language) => ({
+                            value: language.code,
+                            label: language.label,
                         }))}
                     />
                 </label>

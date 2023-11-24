@@ -12,14 +12,14 @@ app.use(express.json());
 app.get('/glossaries', async (req, res) => {
   try {
       const response = await axios.get(
-          'https://api-free.deepl.com/v2/glossaries',
+          'https://api-free.deepl.com/v2/glossary-language-pairs',
           {
               headers: {
                   'Authorization': `DeepL-Auth-Key ${apiKey}`,
               },
           }
       );
-      res.json({ glossaries: response.data.glossaries });
+      res.json({ glossaries: response.data.supported_languages });
   } catch (error) {
       console.error('Error fetching languages:', error);
       res.status(500).json({ error: 'Internal Server Error' });
