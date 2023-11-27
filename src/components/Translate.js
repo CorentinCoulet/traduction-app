@@ -15,16 +15,13 @@ const Translate = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:5000/glossaries');
-        console.log(response.data);
         if (response.data && response.data.glossaries) {
-          const uniqueLanguages = Array.from(new Set(response.data.glossaries.map(lang => lang.detected_source_language)))
+          const uniqueLanguages = Array.from(new Set(response.data.glossaries.map(lang => lang.source_lang)))
             .map(languageCode => ({
               code: languageCode,
-              label: response.data.glossaries.find(lang => lang.detected_source_language === languageCode).language,
+              label: response.data.glossaries.find(lang => lang.source_lang === languageCode).language,
             }));
-
           setLanguages(uniqueLanguages);
-
           if (uniqueLanguages.length > 0) {
             setSourceLanguage(uniqueLanguages[0].code);
           }

@@ -15,6 +15,10 @@
     margin-bottom: 5px;
 }
 
+.selecteur__menu-list {
+    background-color: bisque;
+}
+
 .tradArea1, .tradArea2 {
     width:  400px;
     height: 200px;
@@ -45,3 +49,4 @@
 .tradArea2 {
     background-color: #5959AB;
 }
+
