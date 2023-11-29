@@ -7,8 +7,8 @@ import "../styles/Translate.css";
 const Translate = () => {
   const [text, setText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
-  const [sourceLanguage, setSourceLanguage] = useState('');
-  const [targetLanguage, setTargetLanguage] = useState('fr');
+  const [sourceLanguage, setSourceLanguage] = useState('fr');
+  const [targetLanguage, setTargetLanguage] = useState('en');
   const [languages, setLanguages] = useState([]);
 
   useEffect(() => {
@@ -22,9 +22,9 @@ const Translate = () => {
               label: response.data.glossaries.find(lang => lang.source_lang === languageCode).language,
             }));
           setLanguages(uniqueLanguages);
-          if (uniqueLanguages.length > 0) {
-            setSourceLanguage(uniqueLanguages[0].code);
-          }
+          // if (uniqueLanguages.length > 0) {
+          //   setSourceLanguage(uniqueLanguages[0].code);
+          // }
         } else {
           console.error('Invalid response format:', response);
         }
@@ -35,23 +35,37 @@ const Translate = () => {
     fetchData();
   }, []);
 
-    const handleTranslate = debounce(async () => {
+    const handleTranslate = async () => {
         try {
+            if (text.trim() === '') {
+              setTranslatedText('');
+              return;
+            }
             const translationResponse = await axios.post('http://localhost:5000/translate', {
                 text: text,
-                sourceLanguage: sourceLanguage,
                 targetLanguage: targetLanguage,
+                sourceLanguage: sourceLanguage,
             });
-            setTranslatedText(translationResponse.data.translatedText);
+            const newTranslatedText = translationResponse.data.translatedText;
+            if (newTranslatedText !== translatedText) {
+              setTranslatedText(newTranslatedText);
+            }
         } catch (error) {
             console.error('Error translating:', error);
         }
-    }, 500);
+    };
+
+    const delayedTranslate = debounce(handleTranslate, 200);
 
     const handleTextChange = (e) => {
         const newText = e.target.value;
         setText(newText);
-        handleTranslate();
+        if(newText.trim() === ''){
+          setTranslatedText('');
+        }
+        else {
+          delayedTranslate(); 
+        }  
     };
 
     return (
