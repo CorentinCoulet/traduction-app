@@ -55,7 +55,7 @@ const Translate = () => {
         }
     };
 
-    const delayedTranslate = debounce(handleTranslate, 200);
+    const delayedTranslate = debounce(handleTranslate, 500);
 
     const handleTextChange = (e) => {
         const newText = e.target.value;
